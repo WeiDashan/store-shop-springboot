@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weidashan.mapper.UmsResourceMapper">
+    <select id="getByUserId" resultType="UmsResource" parameterType="java.lang.Long">
+        select
+            a.id,a.name,a.type,a.front_url,a.back_url,a.parent_id,a.haschildren
+        from
+            ums_resource as a
+                inner join
+            ums_role_resource as b
+            on
+                a.id = b.resource_id
+                inner join
+            ums_role_user as c
+            on
+                c.role_id = b.role_id
+        where
+            c.user_id = #{userId}
+    </select>
+</mapper>
