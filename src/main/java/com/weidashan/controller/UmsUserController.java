@@ -5,6 +5,7 @@ import com.weidashan.pojo.Email;
 import com.weidashan.pojo.UmsUser;
 import com.weidashan.service.IImgService;
 import com.weidashan.service.IUmsUserService;
+import com.weidashan.service.otherService.RedisService;
 import com.weidashan.util.ResultJson;
 import io.minio.errors.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -18,6 +19,7 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 
 /**
  * <p>
@@ -40,6 +42,9 @@ public class UmsUserController {
 
     @Resource
     RabbitTemplate rabbitTemplate;
+
+    @Resource
+    RedisService redisService;
 
     @GetMapping("/list")
     ResultJson list(Integer pageNo, Integer pageSize, String name){
@@ -74,19 +79,46 @@ public class UmsUserController {
         return ResultJson.success(umsUserService.login(username, password),"登录成功");
     }
 
+    @PostMapping("/changePassword")
+    ResultJson changePassword(String loginName, String code, String password){
+        // 判断验证码是否正确
+        String value = redisService.getString(loginName);
+        if (value==null || value.length()==0){
+            return ResultJson.success(loginName,"验证码已失效");
+        }
+        if (!value.equals(code)){
+            return ResultJson.success(loginName,"验证码错误");
+        }
+        // 修改密码
+        int result = umsUserService.updatePasswordByLoginName(loginName, passwordEncoder.encode(password));
+        if (result == 1) {
+            return ResultJson.success(loginName,"修改成功");
+        }else{
+            return ResultJson.success(loginName,"修改失败");
+        }
+    }
+
     @PostMapping("/getcode")
-    ResultJson getcode(String username){
+    ResultJson getcode(String loginName){
         //如果用户名存在，并且绑定了邮箱，则向其邮箱发送验证码，并返回成功
-        UmsUser umsUser = umsUserService.getUserByLoginName(username);
+        UmsUser umsUser = umsUserService.getUserByLoginName(loginName);
         if (umsUser==null){
-            return ResultJson.success(username,"用户不存在");
+            return ResultJson.success(loginName,"用户不存在");
         }
         String emailTo = umsUser.getEmail();
         if (emailTo==null || emailTo.length()==0){
-            return ResultJson.success(username,"用户未绑定邮箱");
+            return ResultJson.success(loginName,"用户未绑定邮箱");
         }
 
-        String code = "abcdef";
+
+        //判断是否生成过验证码
+        String value = redisService.getString(loginName);
+        if (value!=null && value.length()!=0){
+            return ResultJson.success(loginName,"请勿重复申请验证码");
+        }
+        String code = generateCode();
+        long timeout = 1; // 设置验证码过期时间：1分钟
+        redisService.set(loginName, code, timeout);
 
         //设置邮件主体
         Email email = new Email();
@@ -98,5 +130,17 @@ public class UmsUserController {
         rabbitTemplate.convertAndSend("email", JSONObject.toJSONString(email));
 
         return ResultJson.success(null,"发送验证码成功");
+    }
+
+    public String generateCode(){
+
+        return generateCode(6);
+    }
+    public String generateCode(int number){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i=0;i<number;i++){
+            stringBuilder.append(new Random().nextInt(10));
+        }
+        return stringBuilder.toString();
     }
 }

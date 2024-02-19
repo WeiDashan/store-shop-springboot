@@ -18,6 +18,10 @@ spring:
     port: 5672
     username: admin
     password: admin
+  redis:
+    host: 49.233.51.52
+    port: 6379
+    database: 1
 mybatis-plus:
   type-aliases-package: com.weidashan.pojo
 logging:

@@ -3,6 +3,7 @@ package com.weidashan.service.impl;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.weidashan.pojo.UmsResource;
@@ -83,6 +84,14 @@ public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser> impl
         QueryWrapper<UmsUser> wrapper = new QueryWrapper<>();
         wrapper.eq("login_name",loginName);
         return this.getOne(wrapper);
+    }
+
+    @Override
+    public int updatePasswordByLoginName(String loginName, String password) {
+        UpdateWrapper<UmsUser> wrapper = new UpdateWrapper<>();
+        wrapper.eq("login_name",loginName);
+        wrapper.set("password",password);
+        return baseMapper.update(null,wrapper);
     }
 
     private Map<String,Object> split(List<UmsResource> resources) {

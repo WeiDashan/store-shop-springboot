@@ -23,6 +23,7 @@
         <fastjson.version>1.2.47</fastjson.version>
         <rabbitMQ.version>2.2.1.RELEASE</rabbitMQ.version>
         <mail.version>2.2.1.RELEASE</mail.version>
+        <redis.version>2.2.1.RELEASE</redis.version>
         <java.version>8</java.version>
     </properties>
 
@@ -66,16 +67,26 @@
             <version>${minio.version}</version>
         </dependency>
 
+        <!--    rabbitMQ版本为：management   -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
             <version>${rabbitMQ.version}</version>
         </dependency>
+        <!--    邮件服务   -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-mail</artifactId>
             <version>${mail.version}</version>
         </dependency>
+
+        <!--    redis版本为：5.0.4    -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <version>${redis.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.duracloud</groupId>
