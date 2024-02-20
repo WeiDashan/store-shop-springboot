@@ -19,6 +19,7 @@ public class EmailListener {
     @Value("${spring.mail.username}")
     String emailFrom;
 
+    // 监听RabbitMQ的email队列，获取到message后处理
     @RabbitListener(queues = "email")
     public void handler(Message message){
         Email email = JSONObject.parseObject(
