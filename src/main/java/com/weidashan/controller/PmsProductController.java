@@ -59,6 +59,7 @@ public class PmsProductController {
     IPmsStockService stockService;
     @GetMapping("/list")
     ResultJson list(Integer pageNo, Integer pageSize) {
+        System.out.println(pageNo+" "+pageSize);
         return ResultJson.success(productService.page(new Page<>(pageNo,pageSize)));
     }
 

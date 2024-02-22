@@ -5,10 +5,10 @@ import com.weidashan.pojo.Email;
 import com.weidashan.pojo.UmsUser;
 import com.weidashan.service.IImgService;
 import com.weidashan.service.IUmsUserService;
+import com.weidashan.service.otherService.RabbitMQService;
 import com.weidashan.service.otherService.RedisService;
 import com.weidashan.util.ResultJson;
 import io.minio.errors.*;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,7 +41,7 @@ public class UmsUserController {
     IImgService imgService;
 
     @Resource
-    RabbitTemplate rabbitTemplate;
+    RabbitMQService rabbitMQService;
 
     @Resource
     RedisService redisService;
@@ -120,14 +120,9 @@ public class UmsUserController {
         long timeout = 1; // 设置验证码过期时间：1分钟
         redisService.set(loginName, code, timeout);
 
-        //设置邮件主体
-        Email email = new Email();
-        email.setSubject("获取验证码");
-        email.setMessage("验证码："+code);
-        email.setTo(emailTo);
+        //rabbitMQ发送验证码到邮箱
+        rabbitMQService.sendCodeToEmail(code, emailTo);
 
-        //设置邮件发送
-        rabbitTemplate.convertAndSend("email", JSONObject.toJSONString(email));
 
         return ResultJson.success(null,"发送验证码成功");
     }
