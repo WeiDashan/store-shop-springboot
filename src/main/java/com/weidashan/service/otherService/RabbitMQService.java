@@ -1,6 +1,7 @@
 package com.weidashan.service.otherService;
 
 import com.alibaba.fastjson.JSONObject;
+import com.weidashan.pojo.AppOrder;
 import com.weidashan.pojo.Email;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,10 @@ public class RabbitMQService {
 
         //设置邮件发送
         rabbitTemplate.convertAndSend("email", JSONObject.toJSONString(email));
+    }
+
+    public void sendOrder(AppOrder appOrder){
+        rabbitTemplate.convertAndSend("order", JSONObject.toJSONString(appOrder));
     }
 
 }

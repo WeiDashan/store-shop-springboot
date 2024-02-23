@@ -16,4 +16,5 @@ import java.util.List;
 public interface IPmsStockService extends IService<PmsStock> {
     boolean removeByProductId(Long productId);
     List<PmsStock> getStockByProductId(Long productId);
+
 }
