@@ -64,5 +64,15 @@ public class AppOrder extends BasePojo {
      */
     private Integer orderStatus;
 
+    /**
+     * 商品名称
+     */
+    private String productName;
+
+    /**
+     * 商品图片
+     */
+    private String productIcon;
+
 
 }
