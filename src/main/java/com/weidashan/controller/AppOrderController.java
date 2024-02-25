@@ -57,6 +57,8 @@ public class AppOrderController {
             return ResultJson.error("库存不够，订单无法生成");
         }
 
+        // 秒杀还需要判断是否重复抢购
+
         //库存扣除
         pmsStock.setStock(mysqlStock-orderNum);
         pmsStockService.updateById(pmsStock);
