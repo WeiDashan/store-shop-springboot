@@ -1,7 +1,9 @@
 package com.weidashan.pojo;
 
 import java.math.BigDecimal;
-import com.weidashan.pojo.BasePojo;
+import java.util.List;
+
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -78,5 +80,12 @@ public class PmsProduct extends BasePojo {
      * 商品详情
      * */
     private String detailHtml;
+
+    /**
+     * 子分类
+     *
+     * */
+    @TableField(exist = false)
+    private List<PmsStock> children;
 
 }

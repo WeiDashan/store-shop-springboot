@@ -5,7 +5,6 @@ import com.weidashan.pojo.AppOrder;
 import com.weidashan.pojo.PmsStock;
 import com.weidashan.service.IAppOrderService;
 import com.weidashan.service.IPmsStockService;
-import com.weidashan.service.otherService.RabbitMQService;
 import com.weidashan.util.ResultJson;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,9 +24,6 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/app-order")
 public class AppOrderController {
-
-    @Resource
-    RabbitMQService rabbitMQService;
 
     @Resource
     IPmsStockService pmsStockService;

@@ -4,6 +4,7 @@ import com.weidashan.pojo.PmsProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * <p>
@@ -14,5 +15,4 @@ import java.io.Serializable;
  * @since 2023-11-01
  */
 public interface IPmsProductService extends IService<PmsProduct> {
-
 }
