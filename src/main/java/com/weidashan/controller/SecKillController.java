@@ -3,6 +3,7 @@ package com.weidashan.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.weidashan.pojo.*;
+import com.weidashan.service.IAppOrderService;
 import com.weidashan.service.IPmsProductService;
 import com.weidashan.service.IPmsStockService;
 import com.weidashan.service.ISecKillService;
@@ -40,6 +41,9 @@ public class SecKillController {
     ISecKillService secKillService;
 
     @Resource
+    IAppOrderService appOrderService;
+
+    @Resource
     RedisService redisService;
 
     @Resource
@@ -70,6 +74,7 @@ public class SecKillController {
             appOrder.setStockId(stockId);
             appOrder.setUserId(userId);
             appOrder.setProductNum(1);
+            appOrder.setSecKillId(secKillId);
             rabbitMQService.sendOrder(appOrder);
             return ResultJson.success(1,"订单创建中，请稍后");
         } else if (secKillResult==2) {
@@ -77,8 +82,16 @@ public class SecKillController {
         } else if (secKillResult==3) {
             return ResultJson.error("无法重复抢购");
         } else{
-            return ResultJson.error("秒杀超时");
+            secKillService.updateSecKillActiveById(secKillId);
+            return ResultJson.error("秒杀失效");
         }
+    }
+
+    @GetMapping("/getOrderBySecKillIdAndUserId")
+    ResultJson getOrderBySecKillIdAndUserId(Long secKillId, Long userId){
+        AppOrder appOrder = appOrderService.getOrderBySecKillIdAndUserId(secKillId, userId);
+        System.out.println("getOrderBySecKillIdAndUserId: "+appOrder);
+        return ResultJson.success(appOrder==null?0:1, "请求成功");
     }
 
     @GetMapping("/list")
@@ -98,6 +111,15 @@ public class SecKillController {
         return ResultJson.success(map,"请求成功");
     }
 
+    @GetMapping("/getSecKillById")
+    ResultJson getSecKillById(Long id){
+        SecKill secKill = secKillService.getById(id);
+        if (secKill==null || secKill.getActive()==0){
+            return ResultJson.success(null, "秒杀已失效");
+        }else{
+            return ResultJson.success(secKill, "请求成功");
+        }
+    }
     /**
      *
      * (1) 预扣库存Mysql中stock库存
@@ -170,7 +192,14 @@ public class SecKillController {
      */
     @GetMapping("/getSecKillDetail")
     ResultJson getSecKillDetail(){
-        List<SecKill> secKills = secKillService.list();
+        List<SecKill> secKillInit = secKillService.list();
+        List<SecKill> secKills = new ArrayList<>();
+        for (SecKill secKill: secKillInit){
+            if (secKill.getActive()==1){
+                secKills.add(secKill);
+            }
+        }
+
         List<PmsProduct> products = new ArrayList<>();
         List<PmsStock> stocks = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
@@ -188,4 +217,20 @@ public class SecKillController {
 
         return ResultJson.success(map, "请求成功");
     }
+
+    @GetMapping("/getSecKillDetailById")
+    ResultJson getSecKillDetailById(Long id){
+        SecKill secKill = secKillService.getById(id);
+        Map<String, Object> map = new HashMap<>();
+        long productId = secKill.getProductId();
+        long stockId = secKill.getStockId();
+        PmsProduct product = productService.getById(productId);
+        PmsStock stock = stockService.getById(stockId);
+        map.put("secKill",secKill);
+        map.put("stock", stock);
+        map.put("product", product);
+
+        return ResultJson.success(map, "请求成功");
+    }
+
 }

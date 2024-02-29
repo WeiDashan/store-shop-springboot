@@ -23,12 +23,12 @@ public class RedisConfig {
         return template;
     }
 
-    @Bean
-    public DefaultRedisScript<Long> secKillScript(){
-        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
-        redisScript.setLocation(new ClassPathResource("scripts/secKill.lua"));
-        redisScript.setResultType(Long.class);
-        return redisScript;
-    }
+//    @Bean
+//    public DefaultRedisScript<Long> secKillScript(){
+//        DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
+//        redisScript.setLocation(new ClassPathResource("scripts/secKill.lua"));
+//        redisScript.setResultType(Long.class);
+//        return redisScript;
+//    }
 
 }

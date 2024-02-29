@@ -19,4 +19,6 @@ public interface ISecKillService extends IService<SecKill> {
 
     SecKill getSecKillByStockId(Long stockId);
 
+    boolean updateSecKillActiveById(Long secKillId);
+
 }

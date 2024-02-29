@@ -54,5 +54,9 @@ public class SecKill extends BasePojo {
      */
     private Integer successAmount;
 
+    /**
+     * 1有效 0无效
+     */
+    private Integer active;
 
 }

@@ -74,5 +74,9 @@ public class AppOrder extends BasePojo {
      */
     private String productIcon;
 
+    /**
+     * 秒杀id
+     */
+    private Long secKillId;
 
 }

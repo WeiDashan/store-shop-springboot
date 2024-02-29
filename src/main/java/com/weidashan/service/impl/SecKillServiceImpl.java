@@ -1,6 +1,8 @@
 package com.weidashan.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.weidashan.pojo.SecKill;
@@ -35,5 +37,13 @@ public class SecKillServiceImpl extends ServiceImpl<SecKillMapper, SecKill> impl
         QueryWrapper<SecKill> wrapper = new QueryWrapper<>();
         wrapper.eq("stock_id",stockId);
         return this.getOne(wrapper);
+    }
+
+    @Override
+    public boolean updateSecKillActiveById(Long secKillId) {
+        LambdaUpdateWrapper<SecKill> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(SecKill::getId, secKillId)
+                .set(SecKill::getActive, 0);
+        return update(updateWrapper);
     }
 }

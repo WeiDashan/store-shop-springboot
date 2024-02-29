@@ -4,9 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.weidashan.pojo.AppOrder;
 import com.weidashan.pojo.PmsProduct;
 import com.weidashan.pojo.PmsStock;
+import com.weidashan.pojo.SecKill;
 import com.weidashan.service.IAppOrderService;
 import com.weidashan.service.IPmsProductService;
 import com.weidashan.service.IPmsStockService;
+import com.weidashan.service.ISecKillService;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,11 +27,15 @@ public class OrderListener {
     IPmsStockService stockService;
     @Resource
     IPmsProductService productService;
+
+    @Resource
+    ISecKillService secKillService;
     @Value("${minio.endpoint}")
     String minioUrl;
 
     @RabbitListener(queues = "order")
     public void createOrder(Message message){
+        //生成订单
         AppOrder appOrder = JSONObject.parseObject(new String(message.getBody()),AppOrder.class);
         appOrder.setCreateTime(LocalDateTime.now());
         PmsStock stock = stockService.getById(appOrder.getStockId());
@@ -42,6 +48,12 @@ public class OrderListener {
         appOrder.setProductIcon(minioUrl+"images/"+product.getImg());
         appOrderService.save(appOrder);
         System.out.println("createOrder: "+appOrder.toString());
+
+        //更新secKill表
+        SecKill secKill = secKillService.getById(appOrder.getSecKillId());
+        secKill.setSaleAmount(secKill.getSaleAmount()-1);
+        secKill.setLockAmount(secKill.getLockAmount()+1);
+        secKillService.updateById(secKill);
     }
 
 }

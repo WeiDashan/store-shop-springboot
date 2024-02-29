@@ -33,4 +33,11 @@ public class AppOrderServiceImpl extends ServiceImpl<AppOrderMapper, AppOrder> i
         wrapper.eq("user_id",userId).eq("order_status", orderStatus);
         return list(wrapper);
     }
+
+    @Override
+    public AppOrder getOrderBySecKillIdAndUserId(Long secKillId, Long userId) {
+        QueryWrapper<AppOrder> wrapper = new QueryWrapper<>();
+        wrapper.eq("sec_kill_id", secKillId).eq("user_id", userId);
+        return getOne(wrapper);
+    }
 }

@@ -72,7 +72,7 @@ public class UmsUserServiceImpl extends ServiceImpl<UmsUserMapper, UmsUser> impl
         result.put("front",split.get("front"));
 
         // 获取token
-        String token = JWT.create().withClaim("username",username)
+        String token = JWT.create().withClaim("userName",username)
                 .withClaim("backurls",(List<String>)split.get("back"))
                 .sign(Algorithm.HMAC256("weidashan"));
         result.put("token",token);

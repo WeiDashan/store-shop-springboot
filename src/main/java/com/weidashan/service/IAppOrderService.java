@@ -16,4 +16,7 @@ import java.util.List;
 public interface IAppOrderService extends IService<AppOrder> {
     List<AppOrder> getAllOrdersByUserId(Long userId);
     List<AppOrder> getAllOrdersByUserIdAndStatus(Long userId, Integer orderStatus);
+
+    AppOrder getOrderBySecKillIdAndUserId(Long secKillId, Long userId);
+
 }

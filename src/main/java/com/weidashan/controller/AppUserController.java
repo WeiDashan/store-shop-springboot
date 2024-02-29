@@ -1,6 +1,8 @@
 package com.weidashan.controller;
 
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.weidashan.pojo.AppUser;
 import com.weidashan.service.IAppUserService;
 import com.weidashan.service.IImgService;
@@ -21,6 +23,9 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -144,7 +149,12 @@ public class AppUserController {
         if (!passwordEncoder.matches(rawPassword, appUser.getPassword())){
             return ResultJson.error("密码错误");
         }
-        return ResultJson.success(appUser, "登录成功");
+        Map<String, Object> map = new HashMap<>();
+        String token = JWT.create()
+                .sign(Algorithm.HMAC256("weidashan"));
+        map.put("appUser", appUser);
+        map.put("token", token);
+        return ResultJson.success(map, "登录成功");
     }
 
     /**
@@ -165,6 +175,11 @@ public class AppUserController {
         if (!redisCode.equals(code)){
             return ResultJson.error("验证码错误");
         }
-        return ResultJson.success(appUser, "登录成功");
+        Map<String, Object> map = new HashMap<>();
+        String token = JWT.create()
+                .sign(Algorithm.HMAC256("weidashan"));
+        map.put("appUser", appUser);
+        map.put("token", token);
+        return ResultJson.success(map, "登录成功");
     }
 }
