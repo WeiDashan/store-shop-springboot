@@ -39,5 +39,10 @@ public class RedisService {
     public String getString(String key){
         return (String)redisTemplate.opsForValue().get(key);
     }
-
+    public boolean isExists(String key){
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+    public void del(String key){
+        redisTemplate.delete(key);
+    }
 }

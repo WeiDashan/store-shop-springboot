@@ -86,24 +86,25 @@ public class AppUserController {
     }
     @PostMapping("/getCodeByEmailToLogin")
     ResultJson getCodeByEmailToLogin(String email){
+
+        // 判断邮箱是否绑定过现有用户
         AppUser appUser = appUserService.getAppUserByEmail(email);
         if (appUser == null){
             return ResultJson.error("邮箱未绑定用户");
         }
-        //验证码过期时间
-        long minutesTimeOut = 1;
-        String code = redisService.getString(email);
-        if (code != null){
-            return ResultJson.error("请勿在"+minutesTimeOut+"分钟内重复申请");
+
+        // 判断在1分钟内是否申请过验证码
+        String checkLoginCode = "Generating:"+email;
+        String code = redisService.getString(checkLoginCode);
+        if (code==null){
+            //rabbitMQ发送验证码到邮箱
+            code = generateCodeService.generateCode();
+            rabbitMQService.sendCodeToEmail(code, email);
+        }else{
+            return ResultJson.error("请勿在"+1+"分钟内重复申请");
         }
-        code = generateCodeService.generateCode();
-        redisService.set(email, code, minutesTimeOut);
-        redisService.set(code, email, minutesTimeOut);
 
-        //rabbitMQ发送验证码到邮箱
-        rabbitMQService.sendCodeToEmail(code, email);
-
-        return ResultJson.success("","验证码生成成功");
+        return ResultJson.success("","验证码生成中，请稍后");
     }
 
     /**
