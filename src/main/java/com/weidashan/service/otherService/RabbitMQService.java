@@ -23,6 +23,7 @@ public class RabbitMQService {
         email.setMessage("验证码："+code);
         email.setTo(emailTo);
 
+
         // 设置邮件发送
         rabbitTemplate.convertAndSend("email", JSONObject.toJSONString(email));
 

@@ -104,6 +104,7 @@ public class AppUserController {
             return ResultJson.error("请勿在"+1+"分钟内重复申请");
         }
 
+
         return ResultJson.success("","验证码生成中，请稍后");
     }
 
