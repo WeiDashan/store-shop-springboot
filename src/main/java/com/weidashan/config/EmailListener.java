@@ -31,5 +31,6 @@ public class EmailListener {
         sendMessage.setTo(email.getTo());
         sendMessage.setSubject(email.getSubject());
         javaMailSender.send(sendMessage);
+
     }
 }
