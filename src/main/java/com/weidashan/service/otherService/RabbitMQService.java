@@ -13,27 +13,18 @@ public class RabbitMQService {
 
     @Resource
     RabbitTemplate rabbitTemplate;
-    @Resource
-    RedisService redisService;
+
 
     public void sendCodeToEmail(String code, String emailTo){
         //设置邮件主体
         Email email = new Email();
         email.setSubject("获取验证码");
-        email.setMessage("验证码："+code);
+        email.setMessage(code);
         email.setTo(emailTo);
 
         // 设置邮件发送
         rabbitTemplate.convertAndSend("email", JSONObject.toJSONString(email));
 
-        // redis验证码保存
-        long minutesTimeOut = 5;
-
-        if (redisService.isExists(emailTo)){
-            redisService.del(emailTo);
-        }else{
-            redisService.set(emailTo, code, minutesTimeOut);
-        }
 
     }
     public void sendOrder(AppOrder appOrder){
